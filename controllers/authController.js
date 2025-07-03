@@ -71,7 +71,6 @@ const sendEmailForVerify = async (userDetails) => {
 // const clientUrl = "https://blog-a-frontend.vercel.app";
 
     const verifyUrl = "https://blogapp-backend-2-o19a.onrender.com/api/auth/verify-email/?token=${userDetails.auth_token}";
-
     const emailOptions = {
       to: userDetails.user_email,
       subject: "Verify Your Email Address",
