@@ -31,7 +31,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "skblog", // Your folder on cloudinary
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    // allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
 
