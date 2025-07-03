@@ -67,8 +67,8 @@ const getuser = async (req, res) => {
 //  * Verifies the user's email using a token.
 const sendEmailForVerify = async (userDetails) => {
   try {
-    const clientUrl = "https://bloga-frontend.onrender.com";
-     const verifyUrl = `${clientUrl}/api/auth/verify-email/?token=${userDetails.auth_token}`;
+     const clientUrl = process.env.APP
+    const verifyUrl = `${clientUrl}/api/auth/verify-email/?token=${userDetails.auth_token}`;
     const emailOptions = {
       to: userDetails.user_email,
       subject: "Verify Your Email Address",
