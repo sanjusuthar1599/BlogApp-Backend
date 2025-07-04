@@ -75,7 +75,7 @@ const sendEmailForVerify = async (userDetails) => {
       text: `Hi ${userDetails.user_name}, please verify your email address by clicking the link below.`,
       html: `
 <html>
-  <body style="font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+  <body style="font-family: 'Arial', sans-serif; margin: 0; padding: 1px; background-color: #f5f5f5;">
     <!-- Main Container -->
     <div style="max-width: 600px; margin: 40px auto; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
       
