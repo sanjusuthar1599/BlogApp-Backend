@@ -17,6 +17,10 @@ const sendMail = async (emailOptions) => {
       subject: emailOptions.subject,
       text: emailOptions.text,
       html: emailOptions.html,
+        headers: {
+    'X-Priority': '1',
+    'X-Mailer': 'SKBlog'
+  }
     });
 
     return true;
