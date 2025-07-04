@@ -12,8 +12,7 @@ const sendMail = async (emailOptions) => {
     });
 
     await transporter.sendMail({
-      // from: `"SKBlog" <${process.env.SMTP_USER}>`,
-      from: `"SKBlog" <sanjusuthar1599@gmail.com>`,
+      from: `"SKBlog" <${process.env.SMTP_USER}>`,
       to: emailOptions.to,
       subject: emailOptions.subject,
       text: emailOptions.text,
