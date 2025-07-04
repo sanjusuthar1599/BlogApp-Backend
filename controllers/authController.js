@@ -75,30 +75,50 @@ const sendEmailForVerify = async (userDetails) => {
       text: `Hi ${userDetails.user_name}, please verify your email address by clicking the link below.`,
       html: `
 <html>
-  <body style="font-family: Arial, sans-serif; padding: 40px 20px;">
-    <!-- Card -->
-    <div style="max-width: 520px; margin: auto; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); overflow: hidden;">
+  <body style="font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+    <!-- Main Container -->
+    <div style="max-width: 600px; margin: 40px auto; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
       
-      <!-- Top Header -->
-     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(to bottom right, #f13a14, #f8a62d); padding: 24px 0;">
-  <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=white" alt="logo" style="width: 40px;" />
-  <h1 style="margin: 0; font-size: 22px; font-weight: bold; color: #ffffff;">SKBlog</h1>
-</div>
-      <!-- Body Content -->
-      <div style="padding: 30px;">
-        <h2 style="font-size: 22px; color: #111111; margin-bottom: 15px;">Hi, ${userDetails.user_name}</h2>
-        <p style="font-size: 15px; color: #444444; margin-bottom: 25px;">
-          Thank you for registering with <strong>SKBlog</strong>! Please click the button below to verify your email address. Once verified, you’ll be able to log in and access all features.
+      <!-- Header with Gradient -->
+      <div style="background: linear-gradient(135deg, #f13a14 0%, #f8a62d 100%); padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">SKBlog</h1>
+        <p style="margin: 8px 0 0; font-size: 16px; color: rgba(255,255,255,0.9);">Email Verification</p>
+      </div>
+      
+      <!-- Content Card -->
+      <div style="background: #ffffff; padding: 40px 30px;">
+        <h2 style="font-size: 22px; color: #333333; margin-bottom: 20px; font-weight: 600;">Hi, ${userDetails.user_name}</h2>
+        
+        <p style="font-size: 15px; color: #555555; line-height: 1.6; margin-bottom: 25px;">
+          Thank you for registering with <strong style="color: #f13a14;">SKBlog</strong>! Please click the button below to verify your email address. Once verified, you'll be able to log in and access all features.
         </p>
-        <a href="${verifyUrl}" style="display: inline-block; padding: 12px 20px; background: linear-gradient(to bottom right, #f13a14, #f8a62d); ; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">
-          Verify Email
-        </a>
-        <p style="font-size: 13px; color: #777777; margin-top: 30px;">
+        
+        <!-- Verify Button -->
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${verifyUrl}" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #f13a14 0%, #f8a62d 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; box-shadow: 0 3px 10px rgba(241, 58, 20, 0.2);">
+            Verify Email Address
+          </a>
+        </div>
+        
+        <!-- Secondary Text -->
+        <p style="font-size: 14px; color: #777777; line-height: 1.5; margin-bottom: 5px;">
           If you did not create this account, you can safely ignore this email.
         </p>
-        <p style="margin-top: 10px; font-size: 13px; color: #777777;">
-          Thanks,<br />
-          The SKBlog Team
+        
+        <!-- Expiration Notice (optional) -->
+        <p style="font-size: 13px; color: #999999; margin-top: 30px; font-style: italic;">
+          Note: This verification link will expire in 24 hours.
+        </p>
+      </div>
+      
+      <!-- Footer -->
+      <div style="background: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+        <p style="margin: 0; font-size: 13px; color: #888888;">
+          Thanks,<br>
+          <strong>The SKBlog Team</strong>
+        </p>
+        <p style="margin: 15px 0 0; font-size: 12px; color: #aaaaaa;">
+          © 2025 SKBlog. All rights reserved.
         </p>
       </div>
     </div>
