@@ -22,14 +22,18 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
     role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-   is_email_verify: {
-    type: Boolean,
-    default: false
-  }
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    is_email_verify: {
+      type: Boolean,
+      default: false,
+    },
+    auth_token: String,
+    email_otp: String,
+    email_otp_expiry: Date,
+    is_email_verify: { type: Boolean, default: false },
   },
   {
     timestamps: true,
