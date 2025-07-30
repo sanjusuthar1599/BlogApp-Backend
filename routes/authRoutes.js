@@ -5,6 +5,6 @@ const { register, login, getuser, verifyEmail } = require('../controllers/authCo
 router.post('/register', register);
 router.post('/login', login);
 router.get('/getuser', getuser)
-router.get("/verify-email", verifyEmail);
+router.post("/verify-email", verifyEmail);
 
 module.exports = router;
