@@ -2,6 +2,12 @@ const jsonwebtoken = require("jsonwebtoken");
 const User = require("../models/User");
 const sendMail = require("../utils/sendMail");
 
+
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // "834920"
+};
+
+
 const register = async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -10,15 +16,12 @@ const register = async (req, res) => {
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const user = await User.create({ name, email, password, role });
 
-    // res.status(201).json({
-    //   _id: user._id,
-    //   name: user.name,
-    //   email: user.email,
-    //   role: user.role,
-    //   message: `${role} Registration successful`
-    // });
+    const otp = generateOTP(); // ✅ generate 6 digit OTP (not saving to DB)
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // valid 10 mins
+
+
+    const user = await User.create({ name, email, password, role , email_otp: otp, email_otp_expiry: otpExpiry});
 
     const token = jsonwebtoken.sign(
       { id: user._id, email: user.email },
@@ -35,6 +38,7 @@ const register = async (req, res) => {
       user_name: user.name,
       user_email: user.email,
       auth_token: user.auth_token,
+       email_otp: user.email_otp,
     };
 
     // 👇 Send email here
@@ -47,7 +51,9 @@ const register = async (req, res) => {
     res.status(201).json({
       userDetails,
       message: `${role} Registration successful`,
+       user_id: userDetails.user_id,
     });
+
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ message: "Server error" });
@@ -62,56 +68,37 @@ const getuser = async (req, res) => {
     console.error("Error while fetching users:", error);
     res.status(500).json({ message: "Server error while getting users" });
   }
-};
+};       
 
 //  * Verifies the user's email using a token.
 const sendEmailForVerify = async (userDetails) => {
   try {
-     const clientUrl = process.env.APP
-    const verifyUrl = `${clientUrl}/api/auth/verify-email/?token=${userDetails.auth_token}`;
     const emailOptions = {
       to: userDetails.user_email,
-      subject: "Verify Your Email Address",
-      text: `Hi ${userDetails.user_name}, please verify your email address by clicking the link below.`,
+      subject: "Your OTP for Email Verification",
       html: `
 <html>
   <body style="font-family: 'Arial', sans-serif; margin: 0; padding: 1px; background-color: #f5f5f5;">
-    <!-- Main Container -->
     <div style="max-width: 600px; margin: 40px auto; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
-      
-      <!-- Header with Gradient -->
       <div style="background: linear-gradient(135deg, #f13a14 0%, #f8a62d 100%); padding: 30px; text-align: center;">
         <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">SKBlog</h1>
         <p style="margin: 8px 0 0; font-size: 16px; color: rgba(255,255,255,0.9);">Email Verification</p>
       </div>
-      
-      <!-- Content Card -->
       <div style="background: #ffffff; padding: 40px 30px;">
         <h2 style="font-size: 22px; color: #333333; margin-bottom: 20px; font-weight: 600;">Hi, ${userDetails.user_name}</h2>
-        
         <p style="font-size: 15px; color: #555555; line-height: 1.6; margin-bottom: 25px;">
-          Thank you for registering with <strong style="color: #f13a14;">SKBlog</strong>! Please click the button below to verify your email address. Once verified, you'll be able to log in and access all features.
+          Thank you for registering with <strong style="color: #f13a14;">SKBlog</strong>! Please use the following 6-digit code to verify your email address.
         </p>
-        
-        <!-- Verify Button -->
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${verifyUrl}" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #f13a14 0%, #f8a62d 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; box-shadow: 0 3px 10px rgba(241, 58, 20, 0.2);">
-            Verify Email Address
-          </a>
+          <p style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #f13a14;">${userDetails.email_otp}</p>
         </div>
-        
-        <!-- Secondary Text -->
-        <p style="font-size: 14px; color: #777777; line-height: 1.5; margin-bottom: 5px;">
-          If you did not create this account, you can safely ignore this email.
+        <p style="font-size: 14px; color: #777777; line-height: 1.5;">
+          If you did not request this, please ignore this email.
         </p>
-        
-        <!-- Expiration Notice (optional) -->
         <p style="font-size: 13px; color: #999999; margin-top: 30px; font-style: italic;">
-          Note: This verification link will expire in 24 hours.
+          Note: This OTP is valid for 10 minutes.
         </p>
       </div>
-      
-      <!-- Footer -->
       <div style="background: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
         <p style="margin: 0; font-size: 13px; color: #888888;">
           Thanks,<br>
@@ -136,24 +123,33 @@ const sendEmailForVerify = async (userDetails) => {
 };
 
 const verifyEmail = async (req, res) => {
+const { user_id, otp } = req.body;
+
+console.log("Verify OTP Request:", { user_id, otp });
+
   try {
-    const { token } = req.query;
+    const user = await User.findById(user_id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+    if (user.is_email_verify)
+      return res.status(400).json({ message: "Email already verified" });
 
-    const user = await User.findById(decoded.id);
-    // const user = await User.findOne({ where: { id: decoded.id } });
-    if (!user)
-      return res
-        .status(400)
-        .json({ message: "Invalid token or user not found" });
+    if (
+      user.email_otp !== otp ||
+      new Date(user.email_otp_expiry) < new Date()
+    ) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
 
     user.is_email_verify = true;
+    user.email_otp = undefined;
+    user.email_otp_expiry = undefined;
     await user.save();
 
-    res.status(200).json({ message: "Email verified successfully!" });
+    res.status(200).json({ message: "Email verified successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Email verification failed" });
+    console.error("Verify OTP Error:", err);
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
